@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { StatusBar } from "expo-status-bar";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
-import Ligends from "./src/screens/Ligends";
+import Login from "./src/screens/Login";
 import COLORS from "./src/consts/colors";
 import * as SplashScreen from "expo-splash-screen";
 
@@ -25,7 +25,7 @@ export default function App() {
     <NavigationContainer>
       <StatusBar barStyle="dark-content" backgroundColor={COLORS.white} />
       <Stack.Navigator screenOptions={{ header: () => null }}>
-        <Stack.Screen name="Ligends" component={Ligends} />
+        <Stack.Screen name="Login" component={Login} />
       </Stack.Navigator>
     </NavigationContainer>
   );
