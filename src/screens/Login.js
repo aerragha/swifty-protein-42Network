@@ -9,7 +9,7 @@ import {
 import styles from "../styles/Login.styles.js";
 import * as LocalAuthentication from "expo-local-authentication";
 
-const Login = () => {
+const Login = ({ navigation }) => {
   const [isBiometricSupported, setIsBiometricSupported] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
@@ -26,10 +26,12 @@ const Login = () => {
       promptMessage: "Authenticate",
       fallbackLabel: "Enter Password",
     });
-    auth.then((result) => {
-      setIsAuthenticated(result.success);
-      console.log(result);
-    });
+    auth
+      .then((result) => {
+        setIsAuthenticated(result.success);
+        console.log("res:", result);
+      })
+      .catch((err) => console.log("e1"));
   };
 
   return (
