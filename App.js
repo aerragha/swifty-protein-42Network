@@ -26,8 +26,8 @@ export default function App() {
     <NavigationContainer>
       <StatusBar barStyle="dark-content" backgroundColor={COLORS.white} />
       <Stack.Navigator screenOptions={{ header: () => null }}>
-        <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="Ligands" component={Ligands} />
+        <Stack.Screen name="Login" component={Login} />
       </Stack.Navigator>
     </NavigationContainer>
   );
