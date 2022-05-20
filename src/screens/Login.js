@@ -5,7 +5,6 @@ import {
   SafeAreaView,
   Image,
   TouchableOpacity,
-
 } from "react-native";
 import styles from "../styles/Login.styles.js";
 import * as LocalAuthentication from "expo-local-authentication";
@@ -19,6 +18,10 @@ const Login = ({ navigation }) => {
     (async () => {
       const compatible = await LocalAuthentication.hasHardwareAsync();
       setIsBiometricSupported(compatible);
+      if (!compatible) {
+        navigation.navigate("Ligands");
+      }
+      console.log(compatible);
     })();
   });
 
