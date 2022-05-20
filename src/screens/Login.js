@@ -30,6 +30,7 @@ const Login = ({ navigation }) => {
       .then((result) => {
         setIsAuthenticated(result.success);
         console.log("res:", result);
+        navigation.navigate("Ligands");
       })
       .catch((err) => console.log("e1"));
   };

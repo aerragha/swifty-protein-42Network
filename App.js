@@ -4,6 +4,7 @@ import { StatusBar } from "expo-status-bar";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import Login from "./src/screens/Login";
+import Ligands from "./src/screens/Ligands";
 import COLORS from "./src/consts/colors";
 import * as SplashScreen from "expo-splash-screen";
 
@@ -26,6 +27,7 @@ export default function App() {
       <StatusBar barStyle="dark-content" backgroundColor={COLORS.white} />
       <Stack.Navigator screenOptions={{ header: () => null }}>
         <Stack.Screen name="Login" component={Login} />
+        <Stack.Screen name="Ligands" component={Ligands} />
       </Stack.Navigator>
     </NavigationContainer>
   );
