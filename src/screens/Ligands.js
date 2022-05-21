@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import {
   Text,
   View,
@@ -8,32 +8,48 @@ import {
   AppState,
 } from "react-native";
 import Ligand from "../components/Ligand.js";
+import SuccessModal from "../components/SuccessModal.js";
+import ErrorModal from "../components/ErrorModal.js";
 import styles from "../styles/Ligands.styles.js";
 import LigandsJson from "../consts/ligands.json";
 import Spinner from "react-native-loading-spinner-overlay";
 
 const Ligands = ({ navigation }) => {
   const appState = useRef(AppState.currentState);
-
   const [text, setText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [LigandsList, setLigandsList] = useState([]);
+  // Modal states
+  const [visibleError, setVisibleError] = useState(false);
+  const [visibleSuccess, setVisibleSuccess] = useState(false);
+  const [successMsg, setSuccessMsg] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
 
-  useEffect(() => {
-    const subscription = AppState.addEventListener("change", (nextAppState) => {
-      if (
-        appState.current.match(/inactive|background/) &&
-        nextAppState === "active"
-      ) {
-        navigation.navigate("Login");
-        // console.log("App has come to the foreground!");
-      }
-    });
+  const toggleAlertSuccess = (msg) => {
+    setSuccessMsg(msg);
+    setVisibleSuccess(!visibleSuccess);
+  };
 
-    return () => {
-      subscription.remove();
-    };
-  }, []);
+  const toggleAlertError = (msg) => {
+    setErrorMsg(msg);
+    setVisibleError(!visibleError);
+  };
+
+  // useEffect(() => {
+  //   const subscription = AppState.addEventListener("change", (nextAppState) => {
+  //     if (
+  //       appState.current.match(/inactive|background/) &&
+  //       nextAppState === "active"
+  //     ) {
+  //       navigation.navigate("Login");
+  //       // console.log("App has come to the foreground!");
+  //     }
+  //   });
+
+  //   return () => {
+  //     subscription.remove();
+  //   };
+  // }, []);
 
   useEffect(() => {
     if (text.trim() === "") setLigandsList(LigandsJson);
@@ -44,7 +60,7 @@ const Ligands = ({ navigation }) => {
       setLigandsList(filteredLigands);
     }
   }, [text]);
-  // useEffect()
+
   const onClick = () => {
     setIsLoading(true);
     setTimeout(() => {
@@ -57,9 +73,7 @@ const Ligands = ({ navigation }) => {
     <SafeAreaView style={styles.container}>
       <View style={styles.ligandsContainer}>
         <View style={styles.headerContainer}>
-          <Text onPress={() => setIsLoading(false)} style={styles.headerText}>
-            Ligands
-          </Text>
+          <Text style={styles.headerText}>Ligands</Text>
         </View>
         <View style={styles.listContainer}>
           <TextInput
@@ -88,6 +102,16 @@ const Ligands = ({ navigation }) => {
           />
         </View>
       </View>
+      <SuccessModal
+        visible={visibleSuccess}
+        toggleAlert={toggleAlertSuccess}
+        msg={successMsg}
+      />
+      <ErrorModal
+        visible={visibleError}
+        toggleAlert={toggleAlertError}
+        msg={errorMsg}
+      />
       {isLoading && (
         <Spinner
           visible={true}
