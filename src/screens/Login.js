@@ -11,8 +11,8 @@ import * as LocalAuthentication from "expo-local-authentication";
 import ErrorModal from "../components/ErrorModal.js";
 
 const Login = ({ navigation }) => {
-  const [isBiometricSupported, setIsBiometricSupported] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  // const [isBiometricSupported, setIsBiometricSupported] = useState(false);
+  // const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [visibleError, setVisibleError] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
@@ -25,7 +25,7 @@ const Login = ({ navigation }) => {
   useEffect(() => {
     (async () => {
       const compatible = await LocalAuthentication.hasHardwareAsync();
-      setIsBiometricSupported(compatible);
+      // setIsBiometricSupported(compatible);
       if (!compatible) {
         toggleAlertError("Biometrics not supported");
         navigation.navigate("Ligands");
@@ -40,7 +40,7 @@ const Login = ({ navigation }) => {
     });
     auth
       .then((result) => {
-        setIsAuthenticated(result.success);
+        // setIsAuthenticated(result.success);
         if (result.success) navigation.navigate("Ligands");
         else {
           toggleAlertError("Authentication failed");
