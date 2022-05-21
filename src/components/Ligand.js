@@ -10,7 +10,7 @@ const Ligand = ({ onClick, ligand }) => {
         marginVertical: 7,
         marginHorizontal: 10,
       }}
-      onPress={onClick}
+      onPress={() => onClick(ligand)}
     >
       <Text
         style={{

@@ -8,11 +8,12 @@ import {
   AppState,
 } from "react-native";
 import Ligand from "../components/Ligand.js";
-import SuccessModal from "../components/SuccessModal.js";
+// import SuccessModal from "../components/SuccessModal.js";
 import ErrorModal from "../components/ErrorModal.js";
 import styles from "../styles/Ligands.styles.js";
 import LigandsJson from "../consts/ligands.json";
 import Spinner from "react-native-loading-spinner-overlay";
+import { getPDB } from "../api/api.js";
 
 const Ligands = ({ navigation }) => {
   const appState = useRef(AppState.currentState);
@@ -21,14 +22,14 @@ const Ligands = ({ navigation }) => {
   const [LigandsList, setLigandsList] = useState([]);
   // Modal states
   const [visibleError, setVisibleError] = useState(false);
-  const [visibleSuccess, setVisibleSuccess] = useState(false);
-  const [successMsg, setSuccessMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
+  // const [visibleSuccess, setVisibleSuccess] = useState(false);
+  // const [successMsg, setSuccessMsg] = useState("");
 
-  const toggleAlertSuccess = (msg) => {
-    setSuccessMsg(msg);
-    setVisibleSuccess(!visibleSuccess);
-  };
+  // const toggleAlertSuccess = (msg) => {
+  //   setSuccessMsg(msg);
+  //   setVisibleSuccess(!visibleSuccess);
+  // };
 
   const toggleAlertError = (msg) => {
     setErrorMsg(msg);
@@ -61,12 +62,20 @@ const Ligands = ({ navigation }) => {
     }
   }, [text]);
 
-  const onClick = () => {
+  const onClick = (ligand) => {
     setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 2000);
-    navigation.navigate("LigandView");
+    getPDB(ligand)
+      .then((res) => {
+        setIsLoading(false);
+      })
+      .catch((err) => {
+        setIsLoading(false);
+        toggleAlertError("We can't load the ligand through the website.");
+      });
+    // setTimeout(() => {
+    //   setIsLoading(false);
+    // }, 2000);
+    // navigation.navigate("LigandView");
   };
 
   return (
@@ -102,11 +111,11 @@ const Ligands = ({ navigation }) => {
           />
         </View>
       </View>
-      <SuccessModal
+      {/* <SuccessModal
         visible={visibleSuccess}
         toggleAlert={toggleAlertSuccess}
         msg={successMsg}
-      />
+      /> */}
       <ErrorModal
         visible={visibleError}
         toggleAlert={toggleAlertError}
