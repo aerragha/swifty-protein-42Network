@@ -8,10 +8,18 @@ import {
 } from "react-native";
 import styles from "../styles/Login.styles.js";
 import * as LocalAuthentication from "expo-local-authentication";
+import ErrorModal from "../components/ErrorModal.js";
 
 const Login = ({ navigation }) => {
   const [isBiometricSupported, setIsBiometricSupported] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [visibleError, setVisibleError] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
+
+  const toggleAlertError = (msg) => {
+    setErrorMsg(msg);
+    setVisibleError(!visibleError);
+  };
 
   // Check if hardware supports biometrics
   useEffect(() => {
@@ -19,9 +27,9 @@ const Login = ({ navigation }) => {
       const compatible = await LocalAuthentication.hasHardwareAsync();
       setIsBiometricSupported(compatible);
       if (!compatible) {
+        toggleAlertError("Biometrics not supported");
         navigation.navigate("Ligands");
       }
-      console.log(compatible);
     })();
   });
 
@@ -33,8 +41,11 @@ const Login = ({ navigation }) => {
     auth
       .then((result) => {
         setIsAuthenticated(result.success);
-        console.log("res:", result);
-        navigation.navigate("Ligands");
+        if (result.success) navigation.navigate("Ligands");
+        else {
+          toggleAlertError("Authentication failed");
+        }
+        // console.log("res:", result);
       })
       .catch((err) => console.log("e1"));
   };
@@ -60,6 +71,11 @@ const Login = ({ navigation }) => {
           <Text style={styles.btnText}>Go</Text>
         </TouchableOpacity>
       </View>
+      <ErrorModal
+        visible={visibleError}
+        toggleAlert={toggleAlertError}
+        msg={errorMsg}
+      />
     </SafeAreaView>
   );
 };
