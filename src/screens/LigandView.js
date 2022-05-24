@@ -18,9 +18,12 @@ const LigandView = ({ navigation, route }) => {
     const camera = new PerspectiveCamera(
       45,
       gl.drawingBufferWidth / gl.drawingBufferHeight,
-      0.1,
+      1,
       1000
     );
+
+    const renderer = new Renderer({ gl });
+    renderer.setSize(gl.drawingBufferWidth, gl.drawingBufferHeight);
   };
 
   return (
