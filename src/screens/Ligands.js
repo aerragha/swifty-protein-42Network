@@ -14,7 +14,7 @@ import styles from "../styles/Ligands.styles.js";
 import LigandsJson from "../consts/ligands.json";
 import Spinner from "react-native-loading-spinner-overlay";
 import { getPDB } from "../api/api.js";
-import helpers from "../helpers/helpers.js";
+import { parseLigand } from "../helpers/helpers.js";
 
 const Ligands = ({ navigation }) => {
   const appState = useRef(AppState.currentState);
@@ -68,7 +68,7 @@ const Ligands = ({ navigation }) => {
     getPDB(ligand)
       .then((res) => {
         setIsLoading(false);
-        const { atoms, connections } = helpers.parseLigand(res.data);
+        const { atoms, connections } = parseLigand(res);
         navigation.navigate("LigandView", { atoms, connections, ligand });
       })
       .catch((err) => {
