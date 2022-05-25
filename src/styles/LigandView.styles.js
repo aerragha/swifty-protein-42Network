@@ -14,8 +14,12 @@ export default StyleSheet.create({
     marginTop: 20,
     justifyContent: "space-between",
   },
+  switchContainer: {
+
+  },
   footer: {
     flex: 0.1,
-    // backgroundColor: COLORS.light,
+    // borderWidth: 2,
+    // borderColor: COLORS.red,
   }
 });
