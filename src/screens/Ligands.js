@@ -16,6 +16,8 @@ import Spinner from "react-native-loading-spinner-overlay";
 import { getPDB } from "../api/api.js";
 import { parseLigand } from "../helpers/helpers.js";
 
+
+
 const Ligands = ({ navigation }) => {
   const appState = useRef(AppState.currentState);
   const [text, setText] = useState("");
@@ -37,20 +39,28 @@ const Ligands = ({ navigation }) => {
     setVisibleError(!visibleError);
   };
 
+  useEffect(() => {
+    AppState.addEventListener("change", (nextAppState) => {
+      if (
+        nextAppState.match(/inactive|background/) &&
+        appState.current === "active"
+      ) {
+        navigation.navigate("Login");
+        // console.log("App has come to the foreground!");
+      }
+      appState.current = nextAppState;
+    });
+  }, []);
   // useEffect(() => {
-  //   const subscription = AppState.addEventListener("change", (nextAppState) => {
+  //   AppState.addEventListener("change", (nextAppState) => {
   //     if (
-  //       appState.current.match(/inactive|background/) &&
-  //       nextAppState === "active"
+  //       nextAppState.match(/inactive|background/) &&
+  //       appState.current === "active"
   //     ) {
   //       navigation.navigate("Login");
-  //       // console.log("App has come to the foreground!");
   //     }
+  //     appState.current = nextAppState;
   //   });
-
-  //   return () => {
-  //     subscription.remove();
-  //   };
   // }, []);
 
   useEffect(() => {
