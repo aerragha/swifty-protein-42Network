@@ -92,10 +92,11 @@ const LigandView = ({ navigation, route }) => {
         clearcoatRoughness: 0,
       });
       const sphere = new THREE.Mesh(geometry, material);
+      console.log('-----', connections[i])
       sphere.position.set(
-        atoms[i].position.x,
-        atoms[i].position.y,
-        atoms[i].position.z
+        atoms[i].coords.x,
+        atoms[i].coords.y,
+        atoms[i].coords.z
       );
       sphere.name = atoms[i].name;
       scene.add(sphere);
@@ -104,17 +105,17 @@ const LigandView = ({ navigation, route }) => {
 
   //cylinder
   for (let i = 0; i < connections.length; i++) {
-    // console.log(connections[i]);
+    console.log('-----', connections[i])
     let start = new THREE.Vector3(
-      atoms[connections[i].index - 1].position.x,
-      atoms[connections[i].index - 1].position.y,
-      atoms[connections[i].index - 1].position.z
+      atoms[connections[i].atom - 1].coords.x,
+      atoms[connections[i].atom - 1].coords.y,
+      atoms[connections[i].atom - 1].coords.z
     );
     for (let j = 0; j < connections[i].connects.length; j++) {
       let end = new THREE.Vector3(
-        atoms[connections[i].connects[j] - 1].position.x,
-        atoms[connections[i].connects[j] - 1].position.y,
-        atoms[connections[i].connects[j] - 1].position.z
+        atoms[connections[i].connects[j] - 1].coords.x,
+        atoms[connections[i].connects[j] - 1].coords.y,
+        atoms[connections[i].connects[j] - 1].coords.z
       );
       let dist = start.distanceTo(end);
       let cylColor =
@@ -256,8 +257,8 @@ const LigandView = ({ navigation, route }) => {
           <OrbitControlsView
             camera={camera}
             onTouchEndCapture={handleStateChange}
-            // style={{ flex: 1 }}
-            style={{ width: width, height: height }}
+            style={{ flex: 1 }}
+            // style={{ width: '100%', height: '100%' }}
             key={height}
           >
             <GLView
