@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   ScrollView,
   Dimensions,
-  useColorScheme
+  useColorScheme,
 } from "react-native";
 import useColors from "../hooks/useColors";
 import useOrientation from "../hooks/useOrientation";
@@ -49,6 +49,7 @@ const LigandView = ({ navigation, route }) => {
   useEffect(() => {
     return () => clearTimeout(timeout);
   }, []);
+
   useEffect(() => {
     setKey(key + 1);
   }, [mode, selectedColor]);
@@ -66,18 +67,23 @@ const LigandView = ({ navigation, route }) => {
     camera.updateProjectionMatrix();
   }, [height]);
 
+  // useEffect(() => {
+  //   camera.fov = fov;
+  //   camera.updateProjectionMatrix();
+  // }, [fov]);
+
   /****************Three******************/
   // scene
   const scene = new THREE.Scene();
   //camera
 
-  const camera = new THREE.PerspectiveCamera(90, 0.5, 0.01, 2000);
+  const camera = new THREE.PerspectiveCamera(75, 0.5, 0.01, 2000);
   // Raycast
   const raycaster = new THREE.Raycaster();
 
   //sphere
   const geometry = new THREE.SphereGeometry(0.05);
-  if (mode === "1") {
+  if (mode === "2") {
     for (let i = 0; i < atoms.length; i++) {
       let color;
       if (selectedColor == "jmol") color = useColors(atoms[i].name).jmol;
@@ -104,7 +110,6 @@ const LigandView = ({ navigation, route }) => {
 
   //cylinder
   for (let i = 0; i < connections.length; i++) {
-    // console.log(connections[i]);
     let start = new THREE.Vector3(
       atoms[connections[i].index - 1].position.x,
       atoms[connections[i].index - 1].position.y,
@@ -157,146 +162,159 @@ const LigandView = ({ navigation, route }) => {
   };
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView>
-        <View
+      {/* <ScrollView> */}
+      <View
+        style={{
+          flex: 0.3,
+        }}
+      >
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <AntDesign name="arrowleft" size={24} color="black" />
+          </TouchableOpacity>
+          <Text
+            style={{
+              fontSize: 20,
+              fontWeight: "bold",
+            }}
+          >
+            Ligand:{" "}
+            <Text
+              style={{
+                color: COLORS.red,
+              }}
+            >
+              {ligand}
+            </Text>
+          </Text>
+          <TouchableOpacity>
+            <AntDesign name="sharealt" size={24} color="black" />
+          </TouchableOpacity>
+        </View>
+        {/* <TouchableOpacity
+          onPress={() => {
+            camera.fov = 50;
+            camera.updateProjectionMatrix();
+          }}
           style={{
-            flex: 0.3,
+            width: 35,
+            height: 35,
+            backgroundColor: "red",
           }}
         >
-          <View style={styles.header}>
-            <TouchableOpacity onPress={() => navigation.goBack()}>
-              <AntDesign name="arrowleft" size={24} color="black" />
-            </TouchableOpacity>
-            <Text
-              style={{
-                fontSize: 20,
-                fontWeight: "bold",
-              }}
-            >
-              Ligand:{" "}
-              <Text
-                style={{
-                  color: COLORS.red,
-                }}
-              >
-                {ligand}
-              </Text>
-            </Text>
-            <TouchableOpacity>
-              <AntDesign name="sharealt" size={24} color="black" />
-            </TouchableOpacity>
-          </View>
+          <Text>++++++</Text>
+        </TouchableOpacity> */}
 
-          <View
-            style={{
-              marginTop: 20,
-              paddingHorizontal: 20,
-            }}
-          >
-            <Text
-              style={{
-                fontSize: 16,
-                fontWeight: "bold",
-                marginLeft: 5,
-                marginBottom: 10,
-              }}
-            >
-              Color:
-            </Text>
-            <SwitchSelector
-              options={colorOptions}
-              initial={0}
-              onPress={(value) => setSelectedColor(value)}
-              buttonColor={COLORS.red}
-              borderColor={COLORS.red}
-              borderRadius={18}
-              fontSize={15}
-              bold={true}
-              hasPadding={true}
-            />
-          </View>
-          <View
-            style={{
-              marginTop: 20,
-              paddingHorizontal: 20,
-            }}
-          >
-            <Text
-              style={{
-                fontSize: 16,
-                fontWeight: "bold",
-                marginLeft: 5,
-                marginBottom: 10,
-              }}
-            >
-              Modes:
-            </Text>
-            <SwitchSelector
-              options={modes}
-              initial={0}
-              onPress={(value) => setMode(value)}
-              buttonColor={COLORS.red}
-              borderColor={COLORS.red}
-              fontSize={15}
-              bold={true}
-              borderRadius={18}
-              hasPadding={true}
-            />
-          </View>
-        </View>
         <View
           style={{
-            flex: 0.6,
-            borderWidth: 2,
-            borderColor: COLORS.red,
-            height: 500,
             marginTop: 20,
+            paddingHorizontal: 20,
           }}
         >
-          <OrbitControlsView
-            camera={camera}
-            onTouchEndCapture={handleStateChange}
-            // style={{ flex: 1 }}
-            style={{ width: width, height: height }}
-            key={height}
+          <Text
+            style={{
+              fontSize: 16,
+              fontWeight: "bold",
+              marginLeft: 5,
+              marginBottom: 10,
+            }}
           >
-            <GLView
-              key={key}
-              style={{ flex: 1 }}
-              onContextCreate={async (gl) => {
-                /*||||||||||||||Camera||||||||||||||*/
-                camera.position.set(0, 0, 4);
-
-                /*||||||||||||||Render||||||||||||||*/
-                const renderer = new Renderer({ gl });
-                renderer.setSize(gl.drawingBufferWidth, gl.drawingBufferHeight);
-                renderer.setClearColor(
-                  colorScheme === "light" ? 0xffffff : 0x000000,
-                  1
-                );
-                /*||||||||||||||Light||||||||||||||*/
-                const directionalLight = new THREE.DirectionalLight(
-                  0xffffff,
-                  0.5
-                );
-                directionalLight.position.set(0, 0, 100);
-                scene.add(directionalLight);
-                /*||||||||||||||Render Function||||||||||||||*/
-                const animate = () => {
-                  timeout = requestAnimationFrame(animate);
-                  directionalLight.position.copy(camera.position);
-                  camera.updateProjectionMatrix();
-                  renderer.render(scene, camera);
-                  gl.endFrameEXP();
-                };
-                /*||||||||||||||Render||||||||||||||*/
-                animate();
-              }}
-            />
-          </OrbitControlsView>
+            Color:
+          </Text>
+          <SwitchSelector
+            options={colorOptions}
+            initial={0}
+            onPress={(value) => setSelectedColor(value)}
+            buttonColor={COLORS.red}
+            borderColor={COLORS.red}
+            borderRadius={18}
+            fontSize={15}
+            bold={true}
+            hasPadding={true}
+          />
         </View>
-        <View style={styles.footer}></View>
-      </ScrollView>
+        <View
+          style={{
+            marginTop: 20,
+            paddingHorizontal: 20,
+          }}
+        >
+          <Text
+            style={{
+              fontSize: 16,
+              fontWeight: "bold",
+              marginLeft: 5,
+              marginBottom: 10,
+            }}
+          >
+            Modes:
+          </Text>
+          <SwitchSelector
+            options={modes}
+            initial={0}
+            onPress={(value) => setMode(value)}
+            buttonColor={COLORS.red}
+            borderColor={COLORS.red}
+            fontSize={15}
+            bold={true}
+            borderRadius={18}
+            hasPadding={true}
+          />
+        </View>
+      </View>
+      <View
+        style={{
+          flex: 0.7,
+          borderWidth: 2,
+          borderColor: COLORS.red,
+          // height: 500,
+          marginTop: 20,
+        }}
+      >
+        <OrbitControlsView
+          camera={camera}
+          onTouchEndCapture={handleStateChange}
+          // style={{ flex: 1 }}
+          style={{ width: width, height: height }}
+          // key={height}
+        >
+          <GLView
+            key={key}
+            style={{ flex: 1 }}
+            onContextCreate={async (gl) => {
+              /*||||||||||||||Camera||||||||||||||*/
+              camera.position.set(0, 0, 4);
+
+              /*||||||||||||||Render||||||||||||||*/
+              const renderer = new Renderer({ gl });
+              renderer.setSize(gl.drawingBufferWidth, gl.drawingBufferHeight);
+              renderer.setClearColor(
+                colorScheme === "light" ? 0xffffff : 0x000000,
+                1
+              );
+              /*||||||||||||||Light||||||||||||||*/
+              const directionalLight = new THREE.DirectionalLight(
+                0xffffff,
+                0.5
+              );
+              directionalLight.position.set(0, 0, 100);
+              scene.add(directionalLight);
+              /*||||||||||||||Render Function||||||||||||||*/
+              const animate = () => {
+                timeout = requestAnimationFrame(animate);
+                directionalLight.position.copy(camera.position);
+                camera.updateProjectionMatrix();
+                renderer.render(scene, camera);
+                gl.endFrameEXP();
+              };
+              /*||||||||||||||Render||||||||||||||*/
+              animate();
+            }}
+          />
+        </OrbitControlsView>
+      </View>
+      {/* <View style={styles.footer}></View> */}
+      {/* </ScrollView> */}
     </SafeAreaView>
   );
 };
