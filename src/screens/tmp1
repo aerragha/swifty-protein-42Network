@@ -21,7 +21,19 @@ import OrbitControlsView from "../components/OrbitControlView";
 import COLORS from "../consts/colors.js";
 
 // Rasmol VS Jmol
-
+ {/* <TouchableOpacity
+          onPress={() => {
+            camera.fov = 50;
+            camera.updateProjectionMatrix();
+          }}
+          style={{
+            width: 35,
+            height: 35,
+            backgroundColor: "red",
+          }}
+        >
+          <Text>++++++</Text>
+        </TouchableOpacity> */}
 const LigandView = ({ navigation, route }) => {
   const { ligand, atoms, connections } = route.params;
   const [selectedColor, setSelectedColor] = useState("rasmol");

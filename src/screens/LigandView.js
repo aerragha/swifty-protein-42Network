@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Text,
   View,
@@ -15,7 +15,7 @@ import useOrientation from "../hooks/useOrientation";
 import styles from "../styles/LigandView.styles.js";
 import { AntDesign } from "@expo/vector-icons";
 import * as THREE from "three";
-import ExpoTHREE, { Renderer, TextureLoader } from "expo-three";
+import { Renderer } from "expo-three";
 import SwitchSelector from "react-native-switch-selector";
 import { GLView } from "expo-gl";
 import OrbitControlsView from "../components/OrbitControlView";
@@ -26,7 +26,7 @@ import COLORS from "../consts/colors.js";
 const LigandView = ({ navigation, route }) => {
   const { ligand, atoms, connections } = route.params;
   const [selectedColor, setSelectedColor] = useState("rasmol");
-  const [mode, setMode] = useState("1");
+  const [mode, setMode] = useState("2");
   const [width, setWidth] = useState();
   const [height, setHeight] = useState();
   const [key, setKey] = useState(1);
@@ -47,21 +47,26 @@ const LigandView = ({ navigation, route }) => {
   const windowWidth = Dimensions.get("window").width;
   const windowHeight = Dimensions.get("window").height;
 
+  const updateWidthHeight = () => {
+    let hDim = Dimensions.get("window").height;
+    let wDim = Dimensions.get("window").width;
+    setWidth(wDim);
+    setHeight(hDim);
+  };
   useEffect(() => {
     return () => clearTimeout(timeout);
   }, []);
 
   useEffect(() => {
     setKey(key + 1);
-  }, [mode, selectedColor]);
+    updateWidthHeight();
+  }, [mode, selectedColor, orientation]);
 
   useEffect(() => {
-    let hDim = Dimensions.get("window").height;
-    let wDim = Dimensions.get("window").width;
-    setWidth(wDim);
-    setHeight(hDim);
-  }, [orientation]);
+    updateWidthHeight();
+  }, []);
 
+  
   useEffect(() => {
     let aspect = height - width > 0 ? height / width : width / height;
     camera.aspect = aspect;
@@ -158,131 +163,112 @@ const LigandView = ({ navigation, route }) => {
     mouse.y = -(locationY / windowHeight) * 2 + 1;
     raycaster.setFromCamera(mouse, camera);
     const intersects = raycaster.intersectObjects(scene.children);
+    console.log("intersects", intersects);
     if (intersects[0]?.object?.name) {
-      alert(intersects[0]?.object?.name);
+      // alert(intersects[0]?.object?.name);
       Alert.alert("Atom type", intersects[0]?.object?.name, [
         { text: "OK", onPress: () => console.log("") },
       ]);
-      // console.log(intersects[0]?.object?.name);
     }
   };
   return (
     <SafeAreaView style={styles.container}>
-      {/* <ScrollView> */}
-      <View
-        style={{
-          flex: 0.3,
-        }}
-      >
-        <View style={styles.header}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <AntDesign name="arrowleft" size={24} color="black" />
-          </TouchableOpacity>
-          <Text
-            style={{
-              fontSize: 20,
-              fontWeight: "bold",
-            }}
-          >
-            Ligand:{" "}
+      <ScrollView>
+        <View>
+          <View style={styles.header}>
+            <TouchableOpacity onPress={() => navigation.goBack()}>
+              <AntDesign name="arrowleft" size={24} color="black" />
+            </TouchableOpacity>
             <Text
               style={{
-                color: COLORS.red,
+                fontSize: 20,
+                fontWeight: "bold",
               }}
             >
-              {ligand}
+              Ligand:{" "}
+              <Text
+                style={{
+                  color: COLORS.red,
+                }}
+              >
+                {ligand}
+              </Text>
             </Text>
-          </Text>
-          <TouchableOpacity>
-            <AntDesign name="sharealt" size={24} color="black" />
-          </TouchableOpacity>
-        </View>
-        {/* <TouchableOpacity
-          onPress={() => {
-            camera.fov = 50;
-            camera.updateProjectionMatrix();
-          }}
-          style={{
-            width: 35,
-            height: 35,
-            backgroundColor: "red",
-          }}
-        >
-          <Text>++++++</Text>
-        </TouchableOpacity> */}
+            <TouchableOpacity>
+              <AntDesign name="sharealt" size={24} color="black" />
+            </TouchableOpacity>
+          </View>
 
-        <View
-          style={{
-            marginTop: 20,
-            paddingHorizontal: 20,
-          }}
-        >
-          <Text
+          <View
             style={{
-              fontSize: 16,
-              fontWeight: "bold",
-              marginLeft: 5,
-              marginBottom: 10,
+              marginTop: 20,
+              paddingHorizontal: 20,
             }}
           >
-            Color:
-          </Text>
-          <SwitchSelector
-            options={colorOptions}
-            initial={0}
-            onPress={(value) => setSelectedColor(value)}
-            buttonColor={COLORS.red}
-            borderColor={COLORS.red}
-            borderRadius={18}
-            fontSize={15}
-            bold={true}
-            hasPadding={true}
-          />
-        </View>
-        <View
-          style={{
-            marginTop: 20,
-            paddingHorizontal: 20,
-          }}
-        >
-          <Text
+            <Text
+              style={{
+                fontSize: 16,
+                fontWeight: "bold",
+                marginLeft: 5,
+                marginBottom: 10,
+              }}
+            >
+              Color:
+            </Text>
+            <SwitchSelector
+              options={colorOptions}
+              initial={0}
+              onPress={(value) => setSelectedColor(value)}
+              buttonColor={COLORS.red}
+              borderColor={COLORS.red}
+              borderRadius={18}
+              fontSize={15}
+              bold={true}
+              hasPadding={true}
+            />
+          </View>
+          <View
             style={{
-              fontSize: 16,
-              fontWeight: "bold",
-              marginLeft: 5,
-              marginBottom: 10,
+              marginTop: 20,
+              paddingHorizontal: 20,
             }}
           >
-            Modes:
-          </Text>
-          <SwitchSelector
-            options={modes}
-            initial={0}
-            onPress={(value) => setMode(value)}
-            buttonColor={COLORS.red}
-            borderColor={COLORS.red}
-            fontSize={15}
-            bold={true}
-            borderRadius={18}
-            hasPadding={true}
-          />
+            <Text
+              style={{
+                fontSize: 16,
+                fontWeight: "bold",
+                marginLeft: 5,
+                marginBottom: 10,
+              }}
+            >
+              Modes:
+            </Text>
+            <SwitchSelector
+              options={modes}
+              initial={1}
+              onPress={(value) => setMode(value)}
+              buttonColor={COLORS.red}
+              borderColor={COLORS.red}
+              fontSize={15}
+              bold={true}
+              borderRadius={18}
+              hasPadding={true}
+            />
+          </View>
         </View>
-      </View>
-      <View
-        style={{
-          flex: 0.7,
-          borderWidth: 2,
-          borderColor: COLORS.red,
-          // height: 500,
+
+       <View style={{
+         alignContent: "center",
+          alignItems: "center",
+          justifyContent: "center",
           marginTop: 20,
-        }}
-      >
-        <OrbitControlsView
+       }}>
+       <OrbitControlsView
           camera={camera}
           onTouchEndCapture={handleStateChange}
           // style={{ flex: 1 }}
-          style={{ width: width, height: height }}
-          // key={height}
+          style={{ width: width, height: height, borderColor: COLORS.red, borderWidth: 2,  borderRadius: 5 }}
+          key={height}
         >
           <GLView
             key={key}
@@ -318,9 +304,8 @@ const LigandView = ({ navigation, route }) => {
             }}
           />
         </OrbitControlsView>
-      </View>
-      {/* <View style={styles.footer}></View> */}
-      {/* </ScrollView> */}
+       </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
