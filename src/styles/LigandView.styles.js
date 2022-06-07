@@ -14,12 +14,19 @@ export default StyleSheet.create({
     marginTop: 20,
     justifyContent: "space-between",
   },
-  switchContainer: {
-
+  switchContainer: {},
+  zoomBtn: {
+    backgroundColor: COLORS.red,
+    width: 35,
+    height: 35,
+    borderRadius: 35 / 2,
+    justifyContent: "center",
+    alignItems: "center",
+    marginHorizontal: 10,
   },
-  footer: {
-    flex: 0.1,
-    // borderWidth: 2,
-    // borderColor: COLORS.red,
-  }
+  zoomText: {
+    color: COLORS.white,
+    fontSize: 20,
+    fontWeight: "bold",
+  },
 });

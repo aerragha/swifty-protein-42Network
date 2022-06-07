@@ -8,6 +8,7 @@ import {
   Dimensions,
   useColorScheme,
   Alert,
+  Platform,
 } from "react-native";
 import useColors from "../hooks/useColors";
 import useOrientation from "../hooks/useOrientation";
@@ -66,7 +67,6 @@ const LigandView = ({ navigation, route }) => {
     updateWidthHeight();
   }, []);
 
-  
   useEffect(() => {
     let aspect = height - width > 0 ? height / width : width / height;
     camera.aspect = aspect;
@@ -171,6 +171,17 @@ const LigandView = ({ navigation, route }) => {
       ]);
     }
   };
+
+  const zoomHandler = (value) => {
+    if (value) {
+      if (camera.fov - 5 > 10) camera.fov -= 5;
+    }
+    if (!value) {
+      if (camera.fov + 5 < 120) camera.fov += 5;
+    }
+    camera.updateProjectionMatrix();
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
@@ -255,56 +266,102 @@ const LigandView = ({ navigation, route }) => {
               hasPadding={true}
             />
           </View>
+          {Platform.OS === "android" && (
+            <View
+              style={{
+                marginTop: 20,
+                paddingHorizontal: 20,
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 16,
+                  fontWeight: "bold",
+                  marginLeft: 5,
+                  marginBottom: 10,
+                }}
+              >
+                Zoom:
+              </Text>
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "center",
+                }}
+              >
+                <TouchableOpacity
+                  style={styles.zoomBtn}
+                  onPress={() => zoomHandler(true)}
+                >
+                  <Text style={styles.zoomText}>+</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.zoomBtn}
+                  onPress={() => zoomHandler(false)}
+                >
+                  <Text style={styles.zoomText}>-</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          )}
         </View>
 
-       <View style={{
-         alignContent: "center",
-          alignItems: "center",
-          justifyContent: "center",
-          marginTop: 20,
-       }}>
-       <OrbitControlsView
-          camera={camera}
-          onTouchEndCapture={handleStateChange}
-          // style={{ flex: 1 }}
-          style={{ width: width, height: height, borderColor: COLORS.red, borderWidth: 2,  borderRadius: 5 }}
-          key={height}
+        <View
+          style={{
+            alignContent: "center",
+            alignItems: "center",
+            justifyContent: "center",
+            marginTop: 20,
+          }}
         >
-          <GLView
-            key={key}
-            style={{ flex: 1 }}
-            onContextCreate={async (gl) => {
-              /*||||||||||||||Camera||||||||||||||*/
-              camera.position.set(0, 0, 4);
-
-              /*||||||||||||||Render||||||||||||||*/
-              const renderer = new Renderer({ gl });
-              renderer.setSize(gl.drawingBufferWidth, gl.drawingBufferHeight);
-              renderer.setClearColor(
-                colorScheme === "light" ? 0xffffff : 0x000000,
-                1
-              );
-              /*||||||||||||||Light||||||||||||||*/
-              const directionalLight = new THREE.DirectionalLight(
-                0xffffff,
-                0.5
-              );
-              directionalLight.position.set(0, 0, 100);
-              scene.add(directionalLight);
-              /*||||||||||||||Render Function||||||||||||||*/
-              const animate = () => {
-                timeout = requestAnimationFrame(animate);
-                directionalLight.position.copy(camera.position);
-                camera.updateProjectionMatrix();
-                renderer.render(scene, camera);
-                gl.endFrameEXP();
-              };
-              /*||||||||||||||Render||||||||||||||*/
-              animate();
+          <OrbitControlsView
+            camera={camera}
+            onTouchEndCapture={handleStateChange}
+            // style={{ flex: 1 }}
+            style={{
+              width: width,
+              height: height,
+              borderColor: COLORS.red,
+              borderWidth: 2,
+              borderRadius: 5,
             }}
-          />
-        </OrbitControlsView>
-       </View>
+            key={height}
+          >
+            <GLView
+              key={key}
+              style={{ flex: 1 }}
+              onContextCreate={async (gl) => {
+                /*||||||||||||||Camera||||||||||||||*/
+                camera.position.set(0, 0, 4);
+
+                /*||||||||||||||Render||||||||||||||*/
+                const renderer = new Renderer({ gl });
+                renderer.setSize(gl.drawingBufferWidth, gl.drawingBufferHeight);
+                renderer.setClearColor(
+                  colorScheme === "light" ? 0xffffff : 0x000000,
+                  1
+                );
+                /*||||||||||||||Light||||||||||||||*/
+                const directionalLight = new THREE.DirectionalLight(
+                  0xffffff,
+                  0.5
+                );
+                directionalLight.position.set(0, 0, 100);
+                scene.add(directionalLight);
+                /*||||||||||||||Render Function||||||||||||||*/
+                const animate = () => {
+                  timeout = requestAnimationFrame(animate);
+                  directionalLight.position.copy(camera.position);
+                  camera.updateProjectionMatrix();
+                  renderer.render(scene, camera);
+                  gl.endFrameEXP();
+                };
+                /*||||||||||||||Render||||||||||||||*/
+                animate();
+              }}
+            />
+          </OrbitControlsView>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
