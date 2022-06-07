@@ -7,6 +7,7 @@ import {
   ScrollView,
   Dimensions,
   useColorScheme,
+  Alert,
 } from "react-native";
 import useColors from "../hooks/useColors";
 import useOrientation from "../hooks/useOrientation";
@@ -37,7 +38,7 @@ const LigandView = ({ navigation, route }) => {
   const modes = [
     { label: "Balls", value: "1" },
     { label: "Both", value: "2" },
-    // { label: "Sticks", value: "3" },
+    { label: "Sticks", value: "3" },
   ];
 
   const orientation = useOrientation();
@@ -67,11 +68,6 @@ const LigandView = ({ navigation, route }) => {
     camera.updateProjectionMatrix();
   }, [height]);
 
-  // useEffect(() => {
-  //   camera.fov = fov;
-  //   camera.updateProjectionMatrix();
-  // }, [fov]);
-
   /****************Three******************/
   // scene
   const scene = new THREE.Scene();
@@ -83,7 +79,7 @@ const LigandView = ({ navigation, route }) => {
 
   //sphere
   const geometry = new THREE.SphereGeometry(0.05);
-  if (mode === "2") {
+  if (mode === "2" || mode === "1") {
     for (let i = 0; i < atoms.length; i++) {
       let color;
       if (selectedColor == "jmol") color = useColors(atoms[i].name).jmol;
@@ -109,42 +105,49 @@ const LigandView = ({ navigation, route }) => {
   }
 
   //cylinder
-  for (let i = 0; i < connections.length; i++) {
-    let start = new THREE.Vector3(
-      atoms[connections[i].index - 1].position.x,
-      atoms[connections[i].index - 1].position.y,
-      atoms[connections[i].index - 1].position.z
-    );
-    for (let j = 0; j < connections[i].connects.length; j++) {
-      let end = new THREE.Vector3(
-        atoms[connections[i].connects[j] - 1].position.x,
-        atoms[connections[i].connects[j] - 1].position.y,
-        atoms[connections[i].connects[j] - 1].position.z
+  if (mode === "2" || mode === "3") {
+    for (let i = 0; i < connections.length; i++) {
+      let start = new THREE.Vector3(
+        atoms[connections[i].index - 1].position.x,
+        atoms[connections[i].index - 1].position.y,
+        atoms[connections[i].index - 1].position.z
       );
-      let dist = start.distanceTo(end);
-      let cylColor =
-        mode == 1 ? 0x3c3939 : colorScheme === "light" ? 0x000000 : 0xffffff;
-      const materialCyl = new THREE.MeshBasicMaterial({
-        color: cylColor,
-      });
-      const cylinderGeometry = new THREE.CylinderGeometry(0.01, 0.01, dist, 64);
-      let axis = new THREE.Vector3(
-        start.x - end.x,
-        start.y - end.y,
-        start.z - end.z
-      ).normalize();
-      const quaternion = new THREE.Quaternion();
-      const cylinderUpAxis = new THREE.Vector3(0, 1, 0);
-      quaternion.setFromUnitVectors(cylinderUpAxis, axis);
-      cylinderGeometry.applyQuaternion(quaternion);
-      cylinderGeometry.translate(
-        (start.x + end.x) / 2,
-        (start.y + end.y) / 2,
-        (start.z + end.z) / 2
-      );
-      const cylinderMesh = new THREE.Mesh(cylinderGeometry, materialCyl);
-      cylinderMesh.frustumCulled = false;
-      scene.add(cylinderMesh);
+      for (let j = 0; j < connections[i].connects.length; j++) {
+        let end = new THREE.Vector3(
+          atoms[connections[i].connects[j] - 1].position.x,
+          atoms[connections[i].connects[j] - 1].position.y,
+          atoms[connections[i].connects[j] - 1].position.z
+        );
+        let dist = start.distanceTo(end);
+        let cylColor =
+          mode == 1 ? 0x3c3939 : colorScheme === "light" ? 0x000000 : 0xffffff;
+        const materialCyl = new THREE.MeshBasicMaterial({
+          color: cylColor,
+        });
+        const cylinderGeometry = new THREE.CylinderGeometry(
+          0.01,
+          0.01,
+          dist,
+          64
+        );
+        let axis = new THREE.Vector3(
+          start.x - end.x,
+          start.y - end.y,
+          start.z - end.z
+        ).normalize();
+        const quaternion = new THREE.Quaternion();
+        const cylinderUpAxis = new THREE.Vector3(0, 1, 0);
+        quaternion.setFromUnitVectors(cylinderUpAxis, axis);
+        cylinderGeometry.applyQuaternion(quaternion);
+        cylinderGeometry.translate(
+          (start.x + end.x) / 2,
+          (start.y + end.y) / 2,
+          (start.z + end.z) / 2
+        );
+        const cylinderMesh = new THREE.Mesh(cylinderGeometry, materialCyl);
+        cylinderMesh.frustumCulled = false;
+        scene.add(cylinderMesh);
+      }
     }
   }
 
@@ -157,7 +160,10 @@ const LigandView = ({ navigation, route }) => {
     const intersects = raycaster.intersectObjects(scene.children);
     if (intersects[0]?.object?.name) {
       alert(intersects[0]?.object?.name);
-      console.log(intersects[0]?.object?.name);
+      Alert.alert("Atom type", intersects[0]?.object?.name, [
+        { text: "OK", onPress: () => console.log("") },
+      ]);
+      // console.log(intersects[0]?.object?.name);
     }
   };
   return (
