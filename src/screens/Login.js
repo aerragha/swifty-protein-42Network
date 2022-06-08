@@ -9,23 +9,33 @@ import {
 import styles from "../styles/Login.styles.js";
 import * as LocalAuthentication from "expo-local-authentication";
 import ErrorModal from "../components/ErrorModal.js";
+import SuccessModal from "../components/SuccessModal.js";
 
 const Login = ({ navigation }) => {
-  // const [isBiometricSupported, setIsBiometricSupported] = useState(false);
-  // const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [visibleError, setVisibleError] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  const [visibleSuccess, setVisibleSuccess] = useState(false);
+  const [successMsg, setSuccessMsg] = useState("");
 
   const toggleAlertError = (msg) => {
     setErrorMsg(msg);
     setVisibleError(!visibleError);
   };
 
+  const successHandler = () => {
+    setVisibleSuccess(!visibleSuccess);
+    navigation.navigate("Ligands");
+  }
+
+  const toggleAlertSuccess = (msg) => {
+    setSuccessMsg(msg);
+    setVisibleSuccess(!visibleSuccess);
+  };
+
   // Check if hardware supports biometrics
   useEffect(() => {
     (async () => {
       const compatible = await LocalAuthentication.hasHardwareAsync();
-      // setIsBiometricSupported(compatible);
       if (!compatible) {
         toggleAlertError("Biometrics not supported");
         navigation.navigate("Ligands");
@@ -40,12 +50,12 @@ const Login = ({ navigation }) => {
     });
     auth
       .then((result) => {
-        // setIsAuthenticated(result.success);
-        if (result.success) navigation.navigate("Ligands");
+        if (result.success) {
+          toggleAlertSuccess("Authenticated with success");
+        } 
         else {
           toggleAlertError("Authentication failed");
         }
-        // console.log("res:", result);
       })
       .catch((err) => console.log("e1"));
   };
@@ -75,6 +85,11 @@ const Login = ({ navigation }) => {
         visible={visibleError}
         toggleAlert={toggleAlertError}
         msg={errorMsg}
+      />
+      <SuccessModal
+        visible={visibleSuccess}
+        successHandler={successHandler}
+        msg={successMsg}
       />
     </SafeAreaView>
   );
