@@ -9,7 +9,7 @@ import {
   useColorScheme,
   Alert,
   Platform,
-  Share,
+  Share
 } from "react-native";
 import useColors from "../hooks/useColors";
 import useOrientation from "../hooks/useOrientation";
@@ -25,7 +25,6 @@ import OrbitControlsView from "../components/OrbitControlView";
 import ShareModal from "../components/ShareModal";
 import COLORS from "../consts/colors.js";
 import * as Sharing from "expo-sharing";
-
 // Rasmol VS Jmol
 
 const LigandView = ({ navigation, route }) => {
@@ -69,7 +68,7 @@ const LigandView = ({ navigation, route }) => {
   const shareHandler = async () => {
     try {
       const res = await viewShotRef.current.capture();
-      console.log({ url: res, message: shareMsg });
+      
       if (Platform.OS === "android") {
         const options = {
           mimeType: 'image/png',
