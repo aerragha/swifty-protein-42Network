@@ -9,18 +9,22 @@ import {
   useColorScheme,
   Alert,
   Platform,
+  Share,
 } from "react-native";
 import useColors from "../hooks/useColors";
 import useOrientation from "../hooks/useOrientation";
-// import { useColorScheme } from "react-native-appearance";
 import styles from "../styles/LigandView.styles.js";
 import { AntDesign } from "@expo/vector-icons";
 import * as THREE from "three";
 import { Renderer } from "expo-three";
+import * as MediaLibrary from "expo-media-library";
 import SwitchSelector from "react-native-switch-selector";
+import ViewShot from "react-native-view-shot";
 import { GLView } from "expo-gl";
 import OrbitControlsView from "../components/OrbitControlView";
+import ShareModal from "../components/ShareModal";
 import COLORS from "../consts/colors.js";
+import * as Sharing from "expo-sharing";
 
 // Rasmol VS Jmol
 
@@ -31,16 +35,54 @@ const LigandView = ({ navigation, route }) => {
   const [width, setWidth] = useState();
   const [height, setHeight] = useState();
   const [key, setKey] = useState(1);
+  const [visibleShare, setVisibleShare] = useState(false);
+  const [shareMsg, setShareMsg] = useState("");
+  const viewShotRef = useRef();
 
   const colorOptions = [
     { label: "Rasmol", value: "rasmol" },
     { label: "Jmol", value: "jmol" },
   ];
+
   const modes = [
     { label: "Balls", value: "1" },
     { label: "Both", value: "2" },
     { label: "Sticks", value: "3" },
   ];
+
+  const toggleShare = () => setVisibleShare(!visibleShare);
+
+  const saveToGallery = async () => {
+    try {
+      const res = await viewShotRef.current.capture();
+      let result = await MediaLibrary.requestPermissionsAsync(true);
+      if (result.status === "granted") {
+        let r = await MediaLibrary.saveToLibraryAsync(res);
+      }
+      Alert.alert("Success", "ScreenShot Successfully saved to gallery");
+      toggleShare();
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const shareHandler = async () => {
+    try {
+      const res = await viewShotRef.current.capture();
+      console.log({ url: res, message: shareMsg });
+      if (Platform.OS === "android") {
+        const options = {
+          mimeType: 'image/png',
+          dialogTitle: shareMsg,
+       };
+       await Sharing.shareAsync(res, options);
+      }
+      else await Share.share({ url: res, message: shareMsg });
+      toggleShare();
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   const orientation = useOrientation();
   const colorScheme = useColorScheme();
@@ -54,6 +96,7 @@ const LigandView = ({ navigation, route }) => {
     setWidth(wDim);
     setHeight(hDim);
   };
+
   useEffect(() => {
     return () => clearTimeout(timeout);
   }, []);
@@ -205,7 +248,7 @@ const LigandView = ({ navigation, route }) => {
                 {ligand}
               </Text>
             </Text>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => toggleShare()}>
               <AntDesign name="sharealt" size={24} color="black" />
             </TouchableOpacity>
           </View>
@@ -306,7 +349,8 @@ const LigandView = ({ navigation, route }) => {
           )}
         </View>
 
-        <View
+        <ViewShot
+          ref={viewShotRef}
           style={{
             alignContent: "center",
             alignItems: "center",
@@ -361,8 +405,15 @@ const LigandView = ({ navigation, route }) => {
               }}
             />
           </OrbitControlsView>
-        </View>
+        </ViewShot>
       </ScrollView>
+      <ShareModal
+        visible={visibleShare}
+        shareHandler={shareHandler}
+        saveToGallery={saveToGallery}
+        shareMsg={shareMsg}
+        setShareMsg={setShareMsg}
+      />
     </SafeAreaView>
   );
 };

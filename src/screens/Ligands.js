@@ -16,8 +16,6 @@ import Spinner from "react-native-loading-spinner-overlay";
 import { getPDB } from "../api/api.js";
 import { parseLigand } from "../helpers/helpers.js";
 
-
-
 const Ligands = ({ navigation }) => {
   const appState = useRef(AppState.currentState);
   const [text, setText] = useState("");

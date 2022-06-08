@@ -1,4 +1,5 @@
 import { StyleSheet, Platform } from "react-native";
+import COLORS from "../consts/colors";
 
 export default StyleSheet.create({
   iconContainer: {
@@ -37,5 +38,20 @@ export default StyleSheet.create({
     marginTop: 16,
     minWidth: "50%",
     paddingHorizontal: 16,
+  },
+  textInput: {
+    marginTop: 30,
+    minWidth: '100%',
+    height: 40,
+    backgroundColor: COLORS.light,
+    borderRadius: 10,
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 20,
+  },
+  listText: {
+    fontSize: 16,
+    fontWeight: "normal",
+    color: COLORS.dark,
   },
 });

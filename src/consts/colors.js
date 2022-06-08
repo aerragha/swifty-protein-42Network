@@ -6,6 +6,7 @@ const COLORS = {
     grey: '#666666',
     flatGreen: '#5DB075',
     flatRed: '#C3272B',
+    secCol: '#7C3E66'
 }
 
 export default COLORS   
