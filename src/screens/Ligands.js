@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef } from "react";
 import {
   Text,
   View,
@@ -24,13 +24,6 @@ const Ligands = ({ navigation }) => {
   // Modal states
   const [visibleError, setVisibleError] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
-  // const [visibleSuccess, setVisibleSuccess] = useState(false);
-  // const [successMsg, setSuccessMsg] = useState("");
-
-  // const toggleAlertSuccess = (msg) => {
-  //   setSuccessMsg(msg);
-  //   setVisibleSuccess(!visibleSuccess);
-  // };
 
   const toggleAlertError = (msg) => {
     setErrorMsg(msg);
@@ -49,17 +42,7 @@ const Ligands = ({ navigation }) => {
       appState.current = nextAppState;
     });
   }, []);
-  // useEffect(() => {
-  //   AppState.addEventListener("change", (nextAppState) => {
-  //     if (
-  //       nextAppState.match(/inactive|background/) &&
-  //       appState.current === "active"
-  //     ) {
-  //       navigation.navigate("Login");
-  //     }
-  //     appState.current = nextAppState;
-  //   });
-  // }, []);
+
 
   useEffect(() => {
     if (text.trim() === "") setLigandsList(LigandsJson);
@@ -118,11 +101,6 @@ const Ligands = ({ navigation }) => {
           />
         </View>
       </View>
-      {/* <SuccessModal
-        visible={visibleSuccess}
-        toggleAlert={toggleAlertSuccess}
-        msg={successMsg}
-      /> */}
       <ErrorModal
         visible={visibleError}
         toggleAlert={toggleAlertError}

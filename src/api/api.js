@@ -3,9 +3,6 @@ import axios from "axios";
 const Api = () => {
   let data = {
     baseURL: "https://files.rcsb.org/ligands/view",
-    // headers: {
-    //   "Content-Type": "application/x-www-form-urlencoded",
-    // },
   };
 
   return axios.create(data);
