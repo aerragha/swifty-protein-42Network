@@ -205,7 +205,7 @@ const LigandView = ({ navigation, route }) => {
     mouse.y = -(locationY / windowHeight) * 2 + 1;
     raycaster.setFromCamera(mouse, camera);
     const intersects = raycaster.intersectObjects(scene.children);
-    console.log("intersects", intersects);
+    // console.log("intersects", intersects);
     if (intersects[0]?.object?.name) {
       // alert(intersects[0]?.object?.name);
       Alert.alert("Atom type", intersects[0]?.object?.name, [

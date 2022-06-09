@@ -57,7 +57,7 @@ const Login = ({ navigation }) => {
           toggleAlertError("Authentication failed");
         }
       })
-      .catch((err) => console.log("e1"));
+      .catch((err) => console.log("Authentication failed"));
   };
 
   return (

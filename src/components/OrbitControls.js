@@ -588,13 +588,13 @@ export class OrbitControls extends EventDispatcher {
         case 1:
           switch (this.touches.ONE) {
             case TOUCH.ROTATE:
-              console.log("TOUCH.ROTATE");
+              // console.log("TOUCH.ROTATE");
               if (this.enableRotate === false) return;
               this.handleTouchStartRotate(event);
               this.state = STATE.TOUCH_ROTATE;
               break;
             case TOUCH.PAN:
-              console.log("TOUCH.PAN");
+              // console.log("TOUCH.PAN");
               if (this.enablePan === false) return;
               this.handleTouchStartPan(event);
               this.state = STATE.TOUCH_PAN;
@@ -606,13 +606,13 @@ export class OrbitControls extends EventDispatcher {
         case 2:
           switch (this.touches.TWO) {
             case TOUCH.DOLLY_PAN:
-              console.log("TOUCH.DOLLY_PAN == Zoom");
+              // console.log("TOUCH.DOLLY_PAN == Zoom");
               if (this.enableZoom === false && this.enablePan === false) return;
               this.handleTouchStartDollyPan(event);
               this.state = STATE.TOUCH_DOLLY_PAN;
               break;
             case TOUCH.DOLLY_ROTATE:
-              console.log("TOUCH.DOLLY_PAN");
+              // console.log("TOUCH.DOLLY_PAN");
               if (this.enableZoom === false && this.enableRotate === false)
                 return;
               this.handleTouchStartDollyRotate(event);
