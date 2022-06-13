@@ -14,7 +14,7 @@ This project aims to make you familiar with :
 - Basic understanding of biochemy
 
 ## Stack
-- Ract Native
+- React Native
 - Expo
 - Threejs
 
